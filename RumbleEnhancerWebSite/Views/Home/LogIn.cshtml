@@ -1,0 +1,44 @@
+﻿@model RumbleEnhancerWebSite.Models.Profile
+
+@{
+    ViewData["Title"] = "LogIn";
+}
+
+<h1 class="text-center">Login</h1>
+
+<hr />
+
+<div class="text-center" style="width:400px; margin:0 auto;">
+    <div class="text-center">
+        <form asp-action="LogIn">
+            <div class="modal-body">
+                <div class="row">
+                    <div>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <input asp-for="ProfileEmail" class="form-control" required placeholder="Email"/>
+                            <span asp-validation-for="ProfileEmail" class="text-danger"></span>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            <input asp-for="ProfilePassword" class="form-control" type="password" placeholder="Password"  required />
+                            <span asp-validation-for="ProfilePassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                    <input type="submit" value="Login" class="btn btn-primary" style="margin:0 auto; width:100%;" />
+            </div>
+        </form>
+        Not yet a member? <a asp-area="" asp-controller="Home" asp-action="SignUp">Sign Up</a>
+    </div>
+</div>
+
+<div>
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

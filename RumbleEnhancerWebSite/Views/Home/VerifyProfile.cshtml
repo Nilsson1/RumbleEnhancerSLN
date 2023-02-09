@@ -1,0 +1,33 @@
+﻿@model RumbleEnhancerWebSite.Models.Profile
+
+@{
+
+    ViewData["Title"] = "VerifyProfile";
+}
+
+<h1>VerifyProfile</h1>
+
+<p>@Model.ProfileName</p>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="VerifyProfile">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @Html.HiddenFor(model => model.ProfileEmail)
+            @Html.HiddenFor(model => model.ProfileName)
+            @Html.HiddenFor(model => model.ProfilePassword)
+            @Html.HiddenFor(model => model.VerificationStatus)
+            @Html.HiddenFor(model => model.VerificationString)
+            <input asp-for="RumbleURL" class="form-control" required placeholder="Video URL" />
+            <div class="form-group">
+                <input type="submit" value="Verify" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

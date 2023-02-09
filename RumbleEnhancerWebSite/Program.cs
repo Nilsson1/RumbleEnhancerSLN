@@ -1,7 +1,22 @@
+using Microsoft.AspNetCore.Identity;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+builder.Services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth", options =>
+{
+    options.Cookie.Name = "MyCookieAuth";
+    options.LoginPath = "/Home/LogIn";
+    options.AccessDeniedPath = "/Home/LogIn";
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("VerifiedOnly", policy => policy.RequireClaim("Verified"));
+    options.AddPolicy("AdminOnly", policy => policy.RequireClaim("Admin"));
+});
 
 var app = builder.Build();
 
@@ -18,6 +33,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -1,0 +1,41 @@
+﻿@model RumbleEnhancerWebSite.Models.DashboardModel
+
+@{
+    ViewData["Title"] = "Index";
+    string message = TempData["Message"] as string;
+    if(!String.IsNullOrEmpty(message)){
+    <script type="text/javascript">
+        alert("@message");
+    </script>
+    }
+}
+<div style="display:flex; justify-content:space-between; text-align:center">
+    <h1>Your Emotes</h1>
+    <div style="text-align:right">
+        <a class="btn btn-primary" asp-area="" asp-controller="Dashboard" asp-action="UploadEmote">
+            <h3 style="margin:auto">Add Emote!</h3>
+        </a>
+    </div>
+</div>
+
+<hr />
+
+<div class="grid-container" style="display">
+    @foreach (var emote in Model.Emotes)
+    {
+        <div>
+            <a asp-area="" asp-controller="Dashboard" asp-action="RemoveEmote" asp-route-emoteName="@emote.EmoteName" asp-route-profileId="@emote.ProfileId">
+                <label style="text-align:center">@emote.EmoteName</label>
+                <br />
+                <img width="112" height="112" id="Emote" src="data:image/png;base64,@Convert.ToBase64String(emote.ImageData)" />
+                <br />
+            </a>
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+   
+}

@@ -1,0 +1,14 @@
+﻿@if(User.Identity.IsAuthenticated)
+{
+    <form method="post" class="form-inline" asp-area="" asp-controller="Home" asp-action="LogOut">
+        @User.Identity.Name
+        <button type="submit" class="ml-2 btn btn-link">Logout</button>
+    </form>
+}else{
+    <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="LogIn">Log In</a>
+    <!-- Button trigger modal -->
+    //<button type="button" class="btn btn-primary">
+        //Login
+    //</ button >
+    //<partial name="_LoginPartial" />
+}
