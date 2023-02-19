@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace DataAccessLibrary.Models
 {
-    internal class Emote
+    public class Emote
     {
+        public Guid ProfileId { get; set; }
+        public string EmoteName { get; set; }
+        public byte[] ImageData { get; set; }
     }
 }

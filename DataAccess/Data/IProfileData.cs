@@ -6,8 +6,9 @@ namespace DataAccessLibrary.Data
     {
         Task DeleteProfile(int id);
         Task<Profile?> GetProfile(string id);
+        Task<Profile?> GetProfileFromEmail(string id);
         Task<IEnumerable<Profile>> GetProfiles();
         Task InsertProfile(Profile profile);
-        Task SetVerifiedProfile(Profile profile);
+        Task SetVerifiedProfile(string profileId);
     }
 }

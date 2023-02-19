@@ -29,15 +29,23 @@ namespace DataAccessLibrary.Data
             return results.FirstOrDefault();
         }
 
+        public async Task<Profile?> GetProfileFromEmail(string email)
+        {
+            var results = await _db.LoadData<Profile, dynamic>(
+                "profile_GetProfileFromEmail",
+                new { ProfileEmail = email });
+            return results.FirstOrDefault();
+        }
+
         public Task InsertProfile(Profile profile) =>
             _db.SaveData(
-                "test",
-                new { profile.ProfileName, profile.ProfilePassword, profile.ProfileEmail, ProfileVerified = 0 });
+                "dbo.profile_Insert",
+                new { profile.ProfileId, profile.ProfileName, profile.ProfilePassword, profile.ProfileEmail, ProfileVerified = 0 });
 
-        public Task SetVerifiedProfile(Profile profile) =>
+        public Task SetVerifiedProfile(string profileId) =>
             _db.SaveData(
-                "test",
-                new { ProfileVerified = 1 });
+                "[profile_SetVerified]",
+                new { profileId });
 
         public Task DeleteProfile(int id) =>
             _db.SaveData(

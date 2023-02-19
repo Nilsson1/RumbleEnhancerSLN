@@ -31,9 +31,9 @@ namespace RumbleEnhancerWebSite.Models
             return constring;
         }
 
-        public static Profile CreateProfile(Profile profile)
+        public static ProfileModel CreateProfile(ProfileModel profile)
         {
-            Profile successProfile = new Profile();
+            ProfileModel successProfile = new ProfileModel();
             var hashedPW = BCrypt.Net.BCrypt.HashPassword(profile.ProfilePassword);
             profile.ProfilePassword = hashedPW;
             if (GetVerificationStatus(profile))
@@ -47,7 +47,7 @@ namespace RumbleEnhancerWebSite.Models
                 con.Open();
                 cmd.ExecuteNonQuery();
                 con.Close();
-                successProfile = new Profile()
+                successProfile = new ProfileModel()
                 {
                     ProfileEmail = profile.ProfileEmail,
                     ProfileName = profile.ProfileName,
@@ -61,7 +61,7 @@ namespace RumbleEnhancerWebSite.Models
             return successProfile;
         }
 
-        public static bool GetVerificationStatus(Profile profile)
+        public static bool GetVerificationStatus(ProfileModel profile)
         {
             cmd.CommandText = "SELECT * FROM [Profiles] WHERE ProfileName=@ProfileName";
             cmd.Parameters.AddWithValue("@ProfileName", profile.ProfileName);
@@ -102,13 +102,13 @@ namespace RumbleEnhancerWebSite.Models
             return (isNameVerified || isEmailVerified);
         }
 
-        public static Profile LogIn(Profile profile)
+        public static ProfileModel LogIn(ProfileModel profile)
         {
             bool passwordCorrect = false;
             cmd.CommandText = "SELECT * FROM [Profiles] WHERE ProfileEmail=@ProfileEmail";
             cmd.Parameters.AddWithValue("@ProfileEmail", profile.ProfileEmail);
 
-            var loggedInProfile = new Profile();
+            var loggedInProfile = new ProfileModel();
             con.Open();
             try
             {
@@ -148,10 +148,9 @@ namespace RumbleEnhancerWebSite.Models
             return loggedInProfile;
         }
 
-        public static bool VerifyProfile(Profile profile)
+        public static bool VerifyProfile(ProfileModel profile)
         {
             //Check the link
-            //TODO: IMPLEMENT DESCRIPTION CONFIRMER
             string[] videoData = GetVideoData(profile.RumbleURL);
             if (!(videoData[0] == profile.ProfileName && videoData[1].Contains(profile.VerificationString)))
             {
@@ -213,16 +212,16 @@ namespace RumbleEnhancerWebSite.Models
             }*/
         }
 
-        public static List<Profile> GetVerificationStrings(Profile profile)
+        public static List<ProfileModel> GetVerificationStrings(ProfileModel profile)
         {
             cmd.CommandText = "SELECT * FROM [Profiles] WHERE ProfileName=@ProfileName";
             cmd.Parameters.AddWithValue("@ProfileName", profile.ProfileName);
             con.Open();
             var reader = cmd.ExecuteReader();
-            List<Profile> verificationStrings = new List<Profile>();
+            List<ProfileModel> verificationStrings = new List<ProfileModel>();
             while (reader.NextResult())
             {
-                Profile tempProfile = new Profile()
+                ProfileModel tempProfile = new ProfileModel()
                 {
                     ProfileEmail = reader.GetString(reader.GetOrdinal("ProfileEmail")),
                     ProfileName = reader.GetString(reader.GetOrdinal("ProfileName")),
@@ -236,7 +235,7 @@ namespace RumbleEnhancerWebSite.Models
             return verificationStrings;
         }
 
-        public static Profile GetProfile(Profile profile)
+        public static ProfileModel GetProfile(ProfileModel profile)
         {
             cmd.Parameters.Clear();
             cmd.CommandText = "SELECT * FROM [Profiles] WHERE ProfileName=@ProfileName AND ProfileEmail=@ProfileEmail AND ProfilePassword=@ProfilePassword";
@@ -269,13 +268,13 @@ namespace RumbleEnhancerWebSite.Models
             return profileId;
         }
 
-        public static void SendEmail(Profile profile)
+        public static void SendEmail(string email, string verificationString)
         {
-            string to = profile.ProfileEmail; //To address    
+            string to = email; //To address    
             string from = "noreplyrumbleenhancer@gmail.com"; //From address    
             MailMessage message = new MailMessage(from, to);
 
-            string mailbody = "Verify your RumbleEnhancer account by typing the following identifier into the description of a video of yours. <br/> Identifier: " + profile.VerificationString;
+            string mailbody = "Verify your RumbleEnhancer account by typing the following identifier into the description of a video of yours. <br/> Identifier: " + verificationString;
             message.Subject = "Verify your RumbleEnhancer";
             message.Body = mailbody;
             message.BodyEncoding = Encoding.UTF8;
@@ -299,6 +298,9 @@ namespace RumbleEnhancerWebSite.Models
 
         public static string[] GetVideoData(string url)
         {
+            if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+                return null;
+
             string HTML;
             using (var wc = new WebClient())
             {
@@ -354,7 +356,7 @@ namespace RumbleEnhancerWebSite.Models
                 {
                     var emote = new EmoteModel()
                     {
-                        ProfileId = reader.GetGuid(reader.GetOrdinal("ProfileId")).ToString(),
+                        ProfileId = reader.GetGuid(reader.GetOrdinal("ProfileId")),
                         EmoteName = reader.GetString(reader.GetOrdinal("EmoteName")),
                         ImageData = (byte[])reader[reader.GetOrdinal("ImageData")]
                     };

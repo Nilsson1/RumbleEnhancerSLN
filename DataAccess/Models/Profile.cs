@@ -8,7 +8,7 @@ namespace DataAccessLibrary.Models
 {
     public class Profile
     {
-        public string ProfileId { get; set; }
+        public Guid ProfileId { get; set; }
         public string ProfileName { get; set; }
         public string ProfilePassword { get; set; }
         public string ProfileEmail { get; set; }

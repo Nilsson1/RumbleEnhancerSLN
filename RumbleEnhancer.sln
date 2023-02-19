@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RumbleEnhancerWebSite", "RumbleEnhancerWebSite\RumbleEnhancerWebSite.csproj", "{22C1E296-95BC-43D5-8750-235532BABDC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RumbleEnhancerWebSite", "RumbleEnhancerWebSite\RumbleEnhancerWebSite.csproj", "{22C1E296-95BC-43D5-8750-235532BABDC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLibrary", "DataAccess\DataAccessLibrary.csproj", "{0BD979CF-D252-4636-8130-E6443AB9DE06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccessLibrary", "DataAccess\DataAccessLibrary.csproj", "{0BD979CF-D252-4636-8130-E6443AB9DE06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

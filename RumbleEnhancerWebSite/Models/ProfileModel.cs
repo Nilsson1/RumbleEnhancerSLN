@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace RumbleEnhancerWebSite.Models
 {
-    public class Profile
+    public class ProfileModel
     {
         //public string ProfileId { get; set; }
         public string ProfileEmail { get; set; }

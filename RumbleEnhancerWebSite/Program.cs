@@ -1,10 +1,17 @@
+using DataAccessLibrary.DBAccess;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
+builder.Services.AddSingleton<IProfileData, ProfileData>();
+builder.Services.AddSingleton<IEmoteData, EmoteData>();
+
+
 builder.Services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth", options =>
 {
     options.Cookie.Name = "MyCookieAuth";

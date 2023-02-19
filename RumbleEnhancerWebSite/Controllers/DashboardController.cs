@@ -17,14 +17,28 @@ namespace RumbleEnhancerWebSite.Controllers
     [Authorize]
     public class DashboardController : Controller
     {
-        public IActionResult Index()
+        private readonly IEmoteData _data;
+
+        public DashboardController(IEmoteData data)
+        {
+            _data = data;
+        }
+
+        public async Task<IActionResult> Index()
         {
             DashboardModel dashboard = new DashboardModel();
-            dashboard.Emotes = DBManager.GetProfileEmotes(DBManager.GetProfileId(User.Identity.Name));
+            var emotes = await _data.GetEmotes(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
+            //Copy db data to EmoteModel
+            foreach(var emote in emotes)
+            {
+                dashboard.Emotes.Add(new EmoteModel() { EmoteName = emote.EmoteName, ProfileId = emote.ProfileId, ImageData = emote.ImageData });
+            }
+
+            //Add image file to model
             foreach (var emote in dashboard.Emotes)
             {
-                using(var ms = new MemoryStream(emote.ImageData))
+                using (var ms = new MemoryStream(emote.ImageData))
                 {
                     Image emoteFile = Image.FromStream(ms);
                 }
@@ -38,14 +52,12 @@ namespace RumbleEnhancerWebSite.Controllers
         }
 
         [HttpPost]
-        public IActionResult UploadEmote(EmoteModel emote)
+        public async Task<IActionResult> UploadEmote(EmoteModel emote)
         {
             string filename = Path.GetFileNameWithoutExtension(emote.ImageFile.FileName);
             string extension = Path.GetExtension(emote.ImageFile.FileName);
 
-
-            emote.ProfileId = DBManager.GetProfileId(User.Identity.Name);
-
+            emote.ProfileId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             using (var memoryStream = new MemoryStream())
             {
@@ -53,11 +65,21 @@ namespace RumbleEnhancerWebSite.Controllers
                 var imageAsBytes = memoryStream.ToArray();
                 emote.ImageData = imageAsBytes;
             }
-            bool success = DBManager.UploadEmote(emote);
-            if (success)
+            Emote e = new Emote()
             {
-                TempData["Message"] = "Emote has been added!";
-                RedirectToAction("UploadEmote", "DashBoard");
+                ProfileId = emote.ProfileId,
+                EmoteName = emote.EmoteName,
+                ImageData = emote.ImageData
+            };
+
+            try
+            {
+                await _data.InsertEmote(e);
+                TempData["Success"] = "Emote uploaded succesfully!";
+            }
+            catch(Exception ex)
+            {
+                ModelState.AddModelError("", "Emote upload failed!");
             }
             return View();
         }

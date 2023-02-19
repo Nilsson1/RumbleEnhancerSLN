@@ -21,18 +21,19 @@
 <hr />
 
 <div class="grid-container" style="display">
-    @foreach (var emote in Model.Emotes)
-    {
-        <div>
-            <a asp-area="" asp-controller="Dashboard" asp-action="RemoveEmote" asp-route-emoteName="@emote.EmoteName" asp-route-profileId="@emote.ProfileId">
-                <label style="text-align:center">@emote.EmoteName</label>
-                <br />
-                <img width="112" height="112" id="Emote" src="data:image/png;base64,@Convert.ToBase64String(emote.ImageData)" />
-                <br />
-            </a>
-        </div>
+    @if(Model.Emotes.Count > 0){
+        @foreach (var emote in Model.Emotes)
+        {
+            <div>
+                <a asp-area="" asp-controller="Dashboard" asp-action="RemoveEmote" asp-route-emoteName="@emote.EmoteName" asp-route-profileId="@emote.ProfileId">
+                    <label style="text-align:center">@emote.EmoteName</label>
+                    <br />
+                    <img width="112" height="112" id="Emote" src="data:image/png;base64,@Convert.ToBase64String(emote.ImageData)" />
+                    <br />
+                </a>
+            </div>
+        }
     }
-
 </div>
 
 @section Scripts {

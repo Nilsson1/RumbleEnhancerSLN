@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "UploadEmote";
-    string message = TempData["Message"] as string;
+    string message = TempData["Success"] as string;
     if (!String.IsNullOrEmpty(message))
     {
         <script type="text/javascript">
@@ -24,7 +24,7 @@
             </div>
             <br />
             <div class="form-group">
-                <input asp-for="ImageFile" class="form-control" type="file"/>
+                <input asp-for="ImageFile" class="form-control" type="file" required/>
                 <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
             <br />
