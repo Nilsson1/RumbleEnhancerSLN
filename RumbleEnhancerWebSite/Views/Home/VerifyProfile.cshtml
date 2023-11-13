@@ -5,7 +5,7 @@
     ViewData["Title"] = "VerifyProfile";
 }
 
-<h1>VerifyProfile</h1>
+<h1>Verify Profile</h1>
 
 <p>@Model.ProfileName</p>
 
@@ -24,7 +24,23 @@
                 <input type="submit" value="Verify" class="btn btn-primary" />
             </div>
         </form>
+        <div>
+            <form asp-action="SendVerificationCode">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @Html.HiddenFor(model => model.ProfileEmail)
+                @Html.HiddenFor(model => model.ProfileName)
+                @Html.HiddenFor(model => model.ProfilePassword)
+                @Html.HiddenFor(model => model.VerificationStatus)
+                @Html.HiddenFor(model => model.VerificationString)
+                <div class="form-group">
+                    <input type="submit" value="Resend code" class="btn btn-primary" />
+                </div>
+            </form>
+            <!--<a type="button" class="btn btn-primary" asp-action="SendVerificationCode">Resend code</a>-->
+        </div>
     </div>
+
+
 </div>
 
 <div>

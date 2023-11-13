@@ -37,6 +37,14 @@ namespace DataAccessLibrary.Data
             return results.FirstOrDefault();
         }
 
+        public async Task<Profile?> GetProfileFromName(string name)
+        {
+            var results = await _db.LoadData<Profile, dynamic>(
+                "profile_GetProfileFromName",
+                new { ProfileName = name });
+            return results.FirstOrDefault();
+        }
+
         public Task InsertProfile(Profile profile) =>
             _db.SaveData(
                 "dbo.profile_Insert",

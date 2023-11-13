@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -26,6 +27,9 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
+app.UseCors(builder => builder.WithOrigins("*")
+                               .AllowAnyMethod()
+                               .AllowAnyHeader());
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

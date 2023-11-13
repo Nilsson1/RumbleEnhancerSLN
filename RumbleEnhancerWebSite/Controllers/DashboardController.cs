@@ -1,9 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MessagePack.Formatters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.ObjectPool;
+using Newtonsoft.Json;
+using NuGet.Protocol;
 using RumbleEnhancerWebSite.Models;
 using System.Data;
 using System.Drawing;
@@ -11,6 +17,7 @@ using System.Net;
 using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Nodes;
 
 namespace RumbleEnhancerWebSite.Controllers
 {
@@ -51,9 +58,30 @@ namespace RumbleEnhancerWebSite.Controllers
             return View();
         }
 
+        public async Task<IActionResult> EmoteInfo(string profileId, string emoteName)
+        {
+            EmoteModel em = new EmoteModel();
+            try
+            {
+                var emote = await _data.GetEmote(profileId, emoteName);
+
+                em.ProfileId = new Guid(profileId);
+                em.EmoteName = emoteName;
+                em.ImageData = emote.ImageData;
+            }
+            catch (Exception ex)
+            {
+                //TODO
+            }
+            return View(em);
+        }
+
         [HttpPost]
         public async Task<IActionResult> UploadEmote(EmoteModel emote)
         {
+
+            //>>>>>>>>>>>>>>>>TODO: CREATE PROFILE PREFIX FOR EMOTES TO PREVENT DUPLICATE EMOTENAMES!
+
             string filename = Path.GetFileNameWithoutExtension(emote.ImageFile.FileName);
             string extension = Path.GetExtension(emote.ImageFile.FileName);
 
@@ -74,6 +102,10 @@ namespace RumbleEnhancerWebSite.Controllers
 
             try
             {
+                var emoteReply = await _data.GetEmote(e.ProfileId.ToString(), e.EmoteName);
+                if (emoteReply != null)
+                    throw new Exception();
+
                 await _data.InsertEmote(e);
                 TempData["Success"] = "Emote uploaded succesfully!";
             }
@@ -84,10 +116,19 @@ namespace RumbleEnhancerWebSite.Controllers
             return View();
         }
 
-        public IActionResult RemoveEmote(string emoteName, string profileId)
+        [HttpPost]
+        public async Task<IActionResult> RemoveEmote(string emoteName)
         {
+            try
+            {
+                await _data.RemoveEmote(User.FindFirstValue(ClaimTypes.NameIdentifier), emoteName);
+            }
+            catch(Exception ex)
+            {
+                //TODO
+            }
+
             return RedirectToAction("Index");
         }
-
     }
 }

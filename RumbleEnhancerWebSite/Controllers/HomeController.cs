@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Azure.Identity;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using RumbleEnhancerWebSite.Helpers;
 using RumbleEnhancerWebSite.Models;
+using System;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Security.Claims;
+using System.Text;
 
 namespace RumbleEnhancerWebSite.Controllers
 {
@@ -51,6 +54,28 @@ namespace RumbleEnhancerWebSite.Controllers
         [HttpPost]
         public async Task<IActionResult> LogIn(ProfileModel profile)
         {
+            //TEST RUMBLE POST REQUEST FOR LOGIN VERIFICATION **WORKS**
+            /*
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    
+                    //Uri url = new Uri("https://rumble.com/service.php?name=user.get_salts&included_js_libs=main,web_services,events,error,facebook_events,darkmode,ui_header,ui,event_handler,ui_overlay,md5,validate,facebook,google,apple,login_form&included_css_libs=ui_overlay,form,service.user");
+                    Uri url2 = new Uri("https://rumble.com/service.php?name=user.login&included_js_libs=main,web_services,events,error,facebook_events,darkmode,ui_header,ui,event_handler,ui_overlay,md5,validate,facebook,google,apple,login_form&included_css_libs=ui_overlay,form,service.user");
+                    
+                    var data = new System.Net.Http.StringContent("username=USERNAME&password_hashes=PASSWORD", Encoding.UTF8, "application/x-www-form-urlencoded");
+
+                    var result = await client.PostAsync(url2, data);
+                    string resultContent = await result.Content.ReadAsStringAsync();
+                    Console.WriteLine(resultContent);
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }*/
+
             try
             {
                 //Check if Login is valid
@@ -78,6 +103,8 @@ namespace RumbleEnhancerWebSite.Controllers
                 }
                 else
                 {
+                    profile.VerificationString = p.ProfileId.ToString();
+                    profile.ProfileName = p.ProfileName;
                     return View("VerifyProfile", profile);
                 }
 
@@ -86,47 +113,9 @@ namespace RumbleEnhancerWebSite.Controllers
             {
                 ModelState.AddModelError("", "Incorrect Login!");
                 Console.WriteLine(e.Message);
-            };
-
+            };      
             return View(); ;
         }
-
-        /*[HttpPost]
-        public async Task<IActionResult> LogIn(ProfileModel profile)
-        {
-            ModelState.Remove("ProfileName");
-            if (ModelState.IsValid)
-            {
-                var loggedInProfile = DBManager.LogIn(profile);
-
-                //If incorrect login
-                if (loggedInProfile.ProfileEmail == null)
-                {
-                    ModelState.AddModelError("", "Incorrect Login!");
-                }
-                else
-                {
-                    //If verfied profile
-                    if (loggedInProfile.VerificationStatus.Equals(true))
-                    {
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Name, profile.ProfileName),
-                            new Claim(ClaimTypes.Email, profile.ProfileEmail),
-                        };
-                        var identity = new ClaimsIdentity(claims, "MyCookieAuth");
-                        ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
-                        await HttpContext.SignInAsync("MyCookieAuth", claimsPrincipal);
-                        return RedirectToAction("Index", "Dashboard");
-                    }
-                    else
-                    {
-                        return View("VerifyProfile", loggedInProfile);
-                    }
-                }
-            }
-            return View();
-        }*/
 
         [HttpPost]
         public async Task<IActionResult> LogOut()
@@ -134,26 +123,6 @@ namespace RumbleEnhancerWebSite.Controllers
             await HttpContext.SignOutAsync("MyCookieAuth");
             return RedirectToAction("Index");
         }
-
-        /*[HttpPost]
-        public IActionResult SignUp(ProfileModel profile)
-        {
-            if (ModelState.IsValid)
-            {
-                var createdProfile = DBManager.CreateProfile(profile);
-                if (createdProfile.ProfileName == null)
-                {
-                    ModelState.AddModelError("", "Username or email already exist!");
-                }
-                else
-                {
-                    //Send VerificationString
-                    DBManager.SendEmail(DBManager.GetProfile(createdProfile));
-                    return RedirectToAction("Login");
-                }
-            }
-            return View();
-        }*/
 
         [HttpPost]
        public async Task<IActionResult> SignUp(ProfileModel profile)
@@ -183,6 +152,12 @@ namespace RumbleEnhancerWebSite.Controllers
                 }
             }
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult SendVerificationCode(ProfileModel profile)
+        {
+            return View("VerifyProfile", profile);
         }
 
         [HttpPost]
